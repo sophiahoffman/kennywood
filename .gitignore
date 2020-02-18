@@ -1,1 +1,3 @@
 KennywoodEnv/
+*.pyc
+.DS_Store
