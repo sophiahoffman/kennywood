@@ -54,3 +54,48 @@ class Attractions(ViewSet):
         serializer = AttractionSerializer(attractions, many=True, context={'request': request})
 
         return Response(serializer.data)
+
+    def destroy(self, request, pk=None):
+        """Handle DELETE requests to park attractions resource
+
+        Returns:
+            Response -- JSON serialized detail of deleted park attraction
+        """
+        try:
+            attraction = Attraction.objects.get(pk=pk)
+            attraction.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except Attraction.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def update(self, request, pk=None):
+        """Handle PUT requests for an individual itinerary item
+        Returns:
+            Response -- Empty body with 204 status code
+        """
+        attraction = Attraction.objects.get(pk=pk)
+        attraction.name = request.data["name"]
+        attraction.area_id = request.data["area_id"]
+
+        attraction.save()
+
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+    
+    def create(self, request):
+        new_attraction = Attraction()
+        new_attraction.name = request.data["name"]
+        new_attraction.area_id = request.data["area_id"]
+
+        new_attraction.save()
+
+        serializer = AttractionSerializer(new_attraction, context={'request': request})
+
+        return Response(serializer.data)
+
+
